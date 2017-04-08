@@ -1,0 +1,16 @@
+<div class="altura100"></div>
+<div class="container">
+  <form #formToggle="ngForm" novalidate (ngSubmit)="toggleLED();">
+    <div>El estado del LED es: {{status}} check: {{comp}}</div>
+    <md-radio-group class="opciones" [(ngModel)]="arg" name="arg">
+      <md-radio-button value="on">ON</md-radio-button>
+      <md-radio-button value="off">OFF</md-radio-button>
+    </md-radio-group>
+    <div>
+      <button color="primary"  md-raised-button type="submit">Enviar Señal!</button>
+    </div>
+
+  </form>
+  <h4>Valor de Photoresistor: {{intensity}}</h4>
+  <button color="primary" (click)="photoresistor()" md-raised-button type="button">Actualizar Info!</button>
+</div>

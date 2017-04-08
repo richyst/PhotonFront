@@ -1,0 +1,7 @@
+.altura100{
+  height: 100px;
+}
+.opciones {
+  display: inline-flex;
+  flex-direction: column;
+}
