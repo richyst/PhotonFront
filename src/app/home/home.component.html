@@ -1,16 +1,53 @@
 <div class="altura100"></div>
 <div class="container">
-  <form #formToggle="ngForm" novalidate (ngSubmit)="toggleLED();">
-    <div>El estado del LED es: {{status}} check: {{comp}}</div>
-    <md-radio-group class="opciones" [(ngModel)]="arg" name="arg">
-      <md-radio-button value="on">ON</md-radio-button>
-      <md-radio-button value="off">OFF</md-radio-button>
-    </md-radio-group>
-    <div>
-      <button color="primary"  md-raised-button type="submit">Enviar Señal!</button>
-    </div>
-
-  </form>
-  <h4>Valor de Photoresistor: {{intensity}}</h4>
-  <button color="primary" (click)="photoresistor()" md-raised-button type="button">Actualizar Info!</button>
+  <md-card >
+    <md-card-header color="primary">
+      <div md-card-avatar style="background-image: url('assets/photon.png'); background-size:cover;"></div>
+      <md-card-title>Sensor de Nivel de Agua <span *ngIf="status" class="glyphicon glyphicon-ok text-success"></span><span *ngIf="!status" class="glyphicon glyphicon-remove text-danger"> Ultima conexión: {{lastH}}</span> </md-card-title>
+      <md-card-subtitle>Matriculas</md-card-subtitle>
+    </md-card-header>
+    <md-card-content>
+      <div [@formChanged]="formulario">
+        <md-radio-group [(ngModel)]="forma" (ngModelChange)="recalc()">
+          <md-radio-button value="Cilindro">Cilindro</md-radio-button>
+          <md-radio-button value="Prisma">Prisma Cuadrangular</md-radio-button>
+          <md-radio-button value="Cono">Cono Frustum</md-radio-button>
+        </md-radio-group>
+        <br>
+        <br>
+        <br>
+        <md-input-container class="tamanoInp">
+          <input mdInput type="number" name="sep" (ngModelChange)="recalc()" [(ngModel)]="sep" #name="ngModel" min="1" placeholder="Separación de contactos. (cm)">
+        </md-input-container>
+        <br>
+        <br>
+        <div *ngIf="forma=='Prisma'">
+          <md-input-container class="tamanoInp">
+            <input mdInput type="number" name="lado" (ngModelChange)="recalc()" [(ngModel)]="lado" #name="ngModel" min="1" placeholder="Lado de base. (cm)">
+          </md-input-container>
+        </div>
+        <div *ngIf="forma=='Cono'">
+          <md-input-container class="tamanoInp">
+            <input mdInput type="number" name="diam1" (ngModelChange)="recalc()" [(ngModel)]="diam1" #name="ngModel" min="1" placeholder="Diametro menor contenedor. (cm)">
+          </md-input-container>
+          <md-input-container class="tamanoInp">
+            <input mdInput type="number" name="diam2" (ngModelChange)="recalc()" [(ngModel)]="diam2" #name="ngModel" min="1" placeholder="Diametro mayor contenedor. (cm)">
+          </md-input-container>
+        </div>
+        <div *ngIf="forma=='Cilindro'">
+          <md-input-container class="tamanoInp">
+            <input mdInput type="number" name="diam" (ngModelChange)="recalc()" [(ngModel)]="diam" #name="ngModel" min="1" placeholder="Diametro contenedor. (cm)">
+          </md-input-container>
+        </div>
+      </div>
+      <div [@infoChanged]=info>
+        <h1>Informacion</h1>
+      </div>
+      {{vol}} litros {{niv}}
+    </md-card-content>
+    <md-card-actions>
+      <button md-raised-button (click)="formulario=false; info=true;" *ngIf="formulario && sep && diam">Ver Info</button>
+      <button md-raised-button (click)="formulario=true; info=false;" *ngIf="info">Cambiar Entradas.</button>
+    </md-card-actions>
+  </md-card>
 </div>

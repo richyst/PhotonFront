@@ -5,3 +5,8 @@
   display: inline-flex;
   flex-direction: column;
 }
+
+.tamanoInp{
+  width: 33%;
+  margin-right: 15px;
+}
