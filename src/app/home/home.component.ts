@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy , OnInit, OnChanges,
-  Inject, trigger, Input, state, style, transition, animate,ElementRef } from '@angular/core';
+import { Component, ChangeDetectionStrategy , OnInit, OnChanges, Inject } from '@angular/core';
+import {trigger, state,animate,style,transition} from '@angular/animations';
 import {CommandService} from '../services/command.service';
 import {Observable} from 'rxjs/Rx';
 
@@ -8,76 +8,84 @@ import {Observable} from 'rxjs/Rx';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
   providers:[CommandService],
-  animations: [
-    trigger('formChanged', [
-      state('true' , style({ opacity: 1, transform: 'translateX(0%) scale(1.0)' })),
-      state('false', style({ opacity: 0, transform: 'translateX(-100%) scale(0.0)'  })),
-      transition('1 => 0',[
-        animate('400ms')
-      ]),
-      transition('0 => 1',[
-        animate('400ms')
-      ])
+  animations:[
+    trigger('datos', [
+      state('true' , style({ opacity: 1, transform: 'translateX(0%)' })),
+      state('false', style({ opacity: 0, transform: 'translateX(-100%)'  })),
+      transition('1 <=> 0',
+        animate(400)
+      )
     ]),
-    trigger('infoChanged', [
-      state('true' , style({ opacity: 1, transform: 'translateX(0%) scale(1.0)' })),
-      state('false', style({ opacity: 0, transform: 'translateX(100%) scale(0.0)'  })),
-      transition('1 => 0',[
-        animate('400ms')
-      ]),
-      transition('0 => 1',[
-        animate('400ms ')
-      ])
+    trigger('info', [
+      state('true' , style({ opacity: 1, transform: 'translateX(100%)' })),
+      state('false', style({ opacity: 0, transform: 'translateX(100%)'  })),
+      transition('1 <=> 0',
+        animate(400)
+      )
     ])
   ]
 })
 export class HomeComponent implements OnInit {
-  public arg = 'off';
   public status :string;
-  public comp : number;
-  public intensity: number;
-  public formulario:boolean = true;
-  public info : boolean = false;
-  public sep:number = 5;
-  public diam: number = 30;
-  public niv:number = 1;
-  public vol : number=0;
-  public lado : number = 30;
-  public diam1 : number =20;
-  public diam2 : number =30;
-  public forma : string = "Cilindro";
+  public formulario:boolean;
+  public info : boolean;
+  public sep: number;
+  public diam: number;
+  public niv: number;
+  public vol : number;
+  public lado : number;
+  public diam1 : number;
+  public diam2 : number;
+  public forma:string;
   public lastH:string;
-  public historial : number[];
+  public historial=[];
+  public axis=[];
+  public events : boolean;
   constructor(private _httpService: CommandService) { }
 
   ngOnInit() {
-    // this.toggleLED();
+    this.formulario=true;
+    this.info=false;
+    this.sep= 5;
+    this.diam= 30;
+    this.niv=1;
+    this.diam1=25;
+    this.diam2=30;
+    this.forma='Cilindro';
+
     this.infoGeneral();
     this.eventos();
-    this.getNivel();
     this.recalc();
-    let timer = Observable.timer(5000,5000);
-    timer.subscribe(t=>this.getNivel());
   }
   getNivel(){
-    this._httpService.getNivel()
-      .subscribe(
-        data => {console.log(data);this.niv=data.result;},
-        error => console.log(error)
-      );
+    if(this.status){
+      this._httpService.getNivel()
+        .subscribe(
+          data => {console.log(data);this.niv=data.result;},
+          error => console.log(error)
+        );
+    }else{
+      console.log("Photon desconectado");
+    }
+
   }
   infoGeneral(){
     this._httpService.infoGen()
       .subscribe(
-        data => {console.log(data);this.status=data.connected; this.lastH=data.last_heard;},
+        data => {
+          console.log(data);this.status=data.connected;
+          this.lastH=data.last_heard;
+          let timer = Observable.timer(5000,5000);
+          timer.subscribe(t=>this.getNivel());
+        },
         error => console.log(error)
       );
   }
   eventos(){
     this._httpService.getEvents()
       .subscribe(
-        data => {console.log(data); this.recolecta(data);},
-        error => console.log(error)
+        data => {console.log(data); this.recolecta(data);this.events=true;},
+        error => {console.log(error);this.events=false;}
       );
   }
   recalc(){
@@ -93,17 +101,11 @@ export class HomeComponent implements OnInit {
 
   }
   recolecta(data){
-    data.feeds
+    for(var i = 0;i<data.feeds.length;i++){
+      this.historial.push(parseInt(data.feeds[i].field1));
+      this.axis.push(i+1);
+    }
+    console.log(this.historial);
+    console.log(this.axis);
   }
-
-  // toggleLED(){
-  //   this._httpService.toggleLed(this.arg)
-  //     .subscribe(
-  //       data => {console.log(data); this.comp=data.return_value;this.validar(this.comp)},
-  //       error => this.comp=error.return_value
-  //     );
-  //
-  // }
-
-
 }

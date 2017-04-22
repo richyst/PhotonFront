@@ -25,8 +25,7 @@ export class CommandService {
     .map(res => res.json());
   }
   getEvents(){
-    return this._http.get('https://api.thingspeak.com/channels/261968/fields/1.json?results=20')
-    // https://events.bluz.io/devices/b1e2b1e2b1e2b1e2b1e2b1e2\?limit\=10\&access_token\=12345
+    return this._http.get('https://api.thingspeak.com/channels/261968/fields/1.json?results=40')
     .map(res => res.json());
   }
 

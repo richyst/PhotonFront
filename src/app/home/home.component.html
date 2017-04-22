@@ -7,7 +7,7 @@
       <md-card-subtitle>Matriculas</md-card-subtitle>
     </md-card-header>
     <md-card-content>
-      <div [@formChanged]="formulario">
+      <div [@datos]="formulario">
         <md-radio-group [(ngModel)]="forma" (ngModelChange)="recalc()">
           <md-radio-button value="Cilindro">Cilindro</md-radio-button>
           <md-radio-button value="Prisma">Prisma Cuadrangular</md-radio-button>
@@ -40,13 +40,13 @@
           </md-input-container>
         </div>
       </div>
-      <div [@infoChanged]=info>
-        <h1>Informacion</h1>
+      <div [@info]="info">
+        <h1>Informacion {{vol}} litros {{niv}}</h1>
       </div>
-      {{vol}} litros {{niv}}
+
     </md-card-content>
     <md-card-actions>
-      <button md-raised-button (click)="formulario=false; info=true;" *ngIf="formulario && sep && diam">Ver Info</button>
+      <button md-raised-button (click)="eventos()" *ngIf="formulario && sep && diam">Ver Info</button>
       <button md-raised-button (click)="formulario=true; info=false;" *ngIf="info">Cambiar Entradas.</button>
     </md-card-actions>
   </md-card>
