@@ -1,5 +1,5 @@
 .altura100{
-  height: 100px;
+  height: 40px;
 }
 .opciones {
   display: inline-flex;
@@ -9,4 +9,14 @@
 .tamanoInp{
   width: 33%;
   margin-right: 15px;
+}
+.calcs{
+  padding-left: 15px;
+}
+.textoVals{
+  color:#3b3c3d;
+}
+.botones{
+  display: flex;
+  justify-content: center;
 }

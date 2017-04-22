@@ -3,12 +3,18 @@
   <md-card >
     <md-card-header color="primary">
       <div md-card-avatar style="background-image: url('assets/photon.png'); background-size:cover;"></div>
-      <md-card-title>Sensor de Nivel de Agua <span *ngIf="status" class="glyphicon glyphicon-ok text-success"></span><span *ngIf="!status" class="glyphicon glyphicon-remove text-danger"> Ultima conexión: {{lastH}}</span> </md-card-title>
-      <md-card-subtitle>Matriculas</md-card-subtitle>
+      <md-card-title>Sensor de Nivel de Agua <span *ngIf="status" class="glyphicon glyphicon-ok-sign text-off"></span><span *ngIf="!status" class="glyphicon glyphicon-remove-sign text-danger"></span> </md-card-title>
+      <md-card-subtitle>
+        <h6 *ngIf="!status" class="text-danger"> Ultima conexión: {{lastH}}</h6>
+        <h6 *ngIf="status">A01022029 | A01335167 | A01336386 | A01337828 | A01273322</h6>
+
+      </md-card-subtitle>
+
     </md-card-header>
     <md-card-content>
-      <div [@datos]="formulario">
-        <md-radio-group [(ngModel)]="forma" (ngModelChange)="recalc()">
+      <div *ngIf="formulario">
+        <h3>Entradas de Datos.</h3>
+        <md-radio-group [(ngModel)]="forma" class="textoVals" (ngModelChange)="recalc()">
           <md-radio-button value="Cilindro">Cilindro</md-radio-button>
           <md-radio-button value="Prisma">Prisma Cuadrangular</md-radio-button>
           <md-radio-button value="Cono">Cono Frustum</md-radio-button>
@@ -40,14 +46,55 @@
           </md-input-container>
         </div>
       </div>
-      <div [@info]="info">
-        <h1>Informacion {{vol}} litros {{niv}}</h1>
-      </div>
+      <div *ngIf="!formulario">
+        <div class="row">
+          <div class="calcs">
+            <h3 class="textoVals " >Volumen Calculado: {{vol}} litros.</h3>
+            <h3 class="textoVals " *ngIf="status" >Nivel Actual: {{niv}} litros.</h3>
+            <h3 class="textoVals " *ngIf="!status" >Último nivel leído: {{niv}}</h3>
+          </div>
 
+        </div>
+        <hr>
+
+        <div class="row">
+          <div class="col-md-12">
+            <h3 class="text-muted">Historial de Volumen</h3>
+            <div style="display: block;">
+              <canvas baseChart width="400" height="100"
+                      [data]="historial"
+                      [labels]="axis"
+                      [colors]="lineChartColors1"
+                      [options]="lineChartOptions"
+                      legend="true"
+                      chartType="line">
+              </canvas>
+            </div>
+          </div>
+          <div class="col-md-12">
+            <h3 class="text-muted">Historial de Niveles</h3>
+            <div style="display: block;">
+              <canvas baseChart width="400" height="100"
+                      [data]="niveles"
+                      [labels]="axis"
+                      [options]="lineChartOptions1"
+                      legend="true"
+                      [colors]="lineChartColors"
+                      chartType="line">
+              </canvas>
+            </div>
+          </div>
+        </div>
+        <br>
+      </div>
     </md-card-content>
     <md-card-actions>
-      <button md-raised-button (click)="eventos()" *ngIf="formulario && sep && diam">Ver Info</button>
-      <button md-raised-button (click)="formulario=true; info=false;" *ngIf="info">Cambiar Entradas.</button>
+      <div class="botones">
+        <button md-raised-button (click)="formulario=false;" *ngIf="formulario">Ver Info</button>
+        <button md-raised-button (click)="formulario=true;" *ngIf="!formulario">Cambiar Entradas.</button>
+        <button md-raised-button color="primary" (click)="infoGeneral()" *ngIf="!status">Reintentar Conexión </button>
+        <button md-raised-button color="primary" mdTooltip="Obtención de historial falló, reintenta" (click)="eventos()" *ngIf="!events">Reintentar Historial</button>
+      </div>
     </md-card-actions>
   </md-card>
 </div>
