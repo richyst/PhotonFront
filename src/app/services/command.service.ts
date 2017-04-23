@@ -25,7 +25,7 @@ export class CommandService {
     .map(res => res.json());
   }
   getEvents(){
-    return this._http.get('https://api.thingspeak.com/channels/261968/fields/1.json?results=40')
+    return this._http.get('https://api.thingspeak.com/channels/261968/fields/1.json?results=1000')
     .map(res => res.json());
   }
 

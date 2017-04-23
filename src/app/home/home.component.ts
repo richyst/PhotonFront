@@ -24,43 +24,78 @@ export class HomeComponent implements OnInit {
   public niveles = [];
   public axis=[];
   public fechas=[];
+  public fechasOri=[];
   public ticks:number;
   public events : boolean;
-  public lineChartData: Array<any>= [
+  public formatoHora:string;
+  public tamCom : string;
+  public tamComR : string;
+  public comp :boolean;
+  public line = 'line';
+  public volumenData: Array<any>= [
     {
       data:this.historial,
       label: 'Volumen de Agua (litros)'
     }
   ];
-  public lineChartData1: Array<any>= [
+  public nivelesData: Array<any>= [
     {
       data:this.niveles,
       label: 'Nivel de Agua'
     }
   ];
-  public lineChartOptions:any = {
+  public lineChartData2: Array<any>= [
+    {
+      data:this.niveles,
+      label: 'Nivel de Agua'
+    },
+    {
+      data:this.historial,
+      label: 'Volumen de Agua (litros)'
+    }
+  ];
+  public FechaExOptions:any = {
     responsive: true,
     scales:{
       yAxes:[{
         ticks:{
           beginsAtZero:true
         }
+      }],
+      xAxes:[{
+        ticks:{
+          fontSize:9,
+          minRotation:75
+        }
       }]
+    },
+    legend:{
+      display:true
     }
   };
-  public lineChartOptions1:any = {
+  public nivelesOptions:any = {
     responsive: true,
     scales:{
       yAxes:[{
         ticks:{
           beginsAtZero:true,
           max:7,
+        }
+      }]
+    }
+  };
+  public volumenOptions:any = {
+    responsive: true,
+    scales:{
+      yAxes:[{
+        ticks:{
+          beginsAtZero:true,
           min:0
         }
       }]
     }
   };
-  public lineChartColors:Array<any> = [
+  public gris:Array<any> = [
     { // dark grey
       backgroundColor: 'rgba(77,83,96,0.2)',
       borderColor: 'rgba(77,83,96,1)',
@@ -70,7 +105,7 @@ export class HomeComponent implements OnInit {
       pointHoverBorderColor: 'rgba(77,83,96,1)'
     }
   ];
-  public lineChartColors1:Array<any> = [
+  public azul:Array<any> = [
     { // dark grey
       backgroundColor: 'rgba(150,243,255,0.2)',
       borderColor: 'rgba(0,188,212,1)',
@@ -80,9 +115,30 @@ export class HomeComponent implements OnInit {
       pointHoverBorderColor: 'rgba(77,83,96,1)'
     }
   ];
+  public mezclados:Array<any> = [
+    { // dark grey
+      backgroundColor: 'rgba(150,243,255,0.2)',
+      borderColor: 'rgba(0,188,212,1)',
+      pointBackgroundColor: 'rgba(53,186,204,1)',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgba(77,83,96,1)'
+    },
+    { // dark grey
+      backgroundColor: 'rgba(77,83,96,0.2)',
+      borderColor: 'rgba(77,83,96,1)',
+      pointBackgroundColor: 'rgba(77,83,96,1)',
+      pointBorderColor: '#fff',
+      pointHoverBackgroundColor: '#fff',
+      pointHoverBorderColor: 'rgba(77,83,96,1)'
+    }
+  ];
   constructor(private _httpService: CommandService) { }
 
   ngOnInit() {
+    this.comp=false;
+    this.tamCom='col-xs-12'
+    this.formatoHora='FechaExacta';
     this.sep= 5;
     this.diam= 30;
     this.niv=1;
@@ -98,7 +154,10 @@ export class HomeComponent implements OnInit {
     if(this.status){
       this._httpService.getNivel()
         .subscribe(
-          data => {console.log(data);this.niv=data.result;},
+          data => {
+            // console.log(data);
+            this.niv=data.result;
+          },
           error => console.log(error)
         );
     }else{
@@ -110,7 +169,8 @@ export class HomeComponent implements OnInit {
     this._httpService.infoGen()
       .subscribe(
         data => {
-          console.log(data);this.status=data.connected;
+          // console.log(data);
+          this.status=data.connected;
           this.lastH=data.last_heard;
           this.getNivel();
         },
@@ -120,7 +180,11 @@ export class HomeComponent implements OnInit {
   eventos():void{
     this._httpService.getEvents()
       .subscribe(
-        data => {console.log(data);this.recolecta(data);this.events=true;},
+        data => {
+          // console.log(data);
+          this.recolecta(data);
+          this.events=true;
+        },
         error => {console.log(error);this.events=false;}
       );
   }
@@ -139,21 +203,50 @@ export class HomeComponent implements OnInit {
     return volumen;
 
   }
+  comparar(val:number):void{
+    if(val==0){
+      this.tamCom='col-xs-12';
+      this.tamComR='col-xs-12';
+      this.comp=false;
+    }
+    if(val==1){
+      this.tamCom='col-xs-6 division' ;
+      this.tamComR='col-xs-6';
+      this.comp=true;
+    }
+  }
 
   recolecta(data):void{
     for(var i = 0;i<data.feeds.length;i++){
       var num = i+1;
       this.axis[i]=('X'+num);
-      this.fechas[i]=(new Date(Date.parse(data.feeds[i].created_at)));
+      this.parseoFechas("la");
+      if(this.formatoHora=='FechaExacta'){
+        this.fechas[i]=((new Date(Date.parse(data.feeds[i].created_at))).getDate())
+        + '/'
+        +((new Date(Date.parse(data.feeds[i].created_at))).getFullYear()).toString().slice(2,4)
+        +'-'+
+        ((new Date(Date.parse(data.feeds[i].created_at))).getHours())
+        +':'+
+        ((new Date(Date.parse(data.feeds[i].created_at))).getMinutes());
+      }
+      if(this.formatoHora=='Estacion'){
+        this.fechas[i]=((new Date(Date.parse(data.feeds[i].created_at))).getDate())
+        + '/'
+        +((new Date(Date.parse(data.feeds[i].created_at))).getFullYear()).toString().slice(2,4)
+        +'-'+
+        ((new Date(Date.parse(data.feeds[i].created_at))).getHours())
+        +':'+
+        ((new Date(Date.parse(data.feeds[i].created_at))).getMinutes());
+      }
+
       this.historial[i]=(this.calc(parseInt(data.feeds[i].field1)));
       this.niveles[i]=(parseInt(data.feeds[i].field1));
 
     }
-    console.log(this.historial);
-    console.log(this.axis);
-    console.log(this.niveles);
     console.log(this.fechas);
   }
+
   parseoFechas(tipo): void{
     if(tipo=='Ano'){
 

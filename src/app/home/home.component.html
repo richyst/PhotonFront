@@ -57,33 +57,42 @@
 
         </div>
         <hr>
+        <div class="row">
+          <h3 >Resumen de Información</h3>
+        </div>
+        <hr>
+        <div [class]="tamCom">
+          <md-select class="col-xs-12" placeholder="Formato para análisis de datos" [(ngModel)]="formatoHora" name="formato">
+            <md-option value="FechaExacta">Fecha Exacta</md-option>
+            <md-option value="Estación">Estación</md-option>
+          </md-select>
+        </div>
+        <div  [class]="tamComR" *ngIf="comp">
+          <md-select class="col-xs-12" placeholder="Formato para análisis de datos" [(ngModel)]="formatoHora" name="formato">
+            <md-option value="FechaExacta">Fecha Exacta</md-option>
+            <md-option value="Estación">Estación</md-option>
+          </md-select>
+        </div>
+        <div>
+          <div [class]="tamCom">
+            <app-grafica [data]="lineChartData2" [labels]="fechas" [colors]="mezclados"[options]="FechaExOptions" [tipo]='line'></app-grafica>
 
+          </div>
+          <div [class]="tamComR" *ngIf="comp">
+              <app-grafica [data]="lineChartData" [options]="lineChartOptions1" [labels]="axis" [colors]="azul" [tipo]='line'></app-grafica>
+          </div>
+        </div>
+        <button md-raised-button (click)="comparar(1)" *ngIf="!comp">Comparar</button>
+        <button md-raised-button (click)="comparar(0)" *ngIf="comp">Borrar Comparación</button>
+        <hr>
         <div class="row">
           <div class="col-md-12">
             <h3 class="text-muted">Historial de Volumen</h3>
-            <div style="display: block;">
-              <canvas baseChart width="400" height="100"
-                      [datasets]="lineChartData"
-                      [labels]="axis"
-                      [colors]="lineChartColors1"
-                      [options]="lineChartOptions"
-                      legend="true"
-                      chartType="line">
-              </canvas>
-            </div>
+            <app-grafica [data]="volumenData" [labels]="axis" [colors]="gris" [options]="volumenOptions" [tipo]='line'></app-grafica>
           </div>
           <div class="col-md-12">
             <h3 class="text-muted">Historial de Niveles</h3>
-            <div style="display: block;">
-              <canvas baseChart width="400" height="100"
-                      [datasets]="lineChartData1"
-                      [labels]="axis"
-                      [options]="lineChartOptions1"
-                      legend="true"
-                      [colors]="lineChartColors"
-                      chartType="line">
-              </canvas>
-            </div>
+            <app-grafica [data]="nivelesData" [labels]="axis" [options]="nivelesOptions" [colors]="azul" [tipo]='line'></app-grafica>
           </div>
         </div>
         <br>
@@ -93,7 +102,7 @@
       <div class="botones">
         <button md-raised-button (click)="formulario=false;" *ngIf="formulario">Ver Info</button>
         <button md-raised-button (click)="formulario=true;" *ngIf="!formulario">Cambiar Entradas.</button>
-        <button md-raised-button color="primary" (click)="infoGeneral()" *ngIf="!status">Reintentar Conexión </button>
+        <button md-raised-button color="primary" mdTooltip="Ya se está repitiendo cada 5 seg." (click)="infoGeneral()" *ngIf="!status">Reintentar Conexión </button>
         <button md-raised-button color="primary" mdTooltip="Obtención de historial falló, reintenta" (click)="eventos()" *ngIf="!events">Reintentar Historial</button>
       </div>
     </md-card-actions>

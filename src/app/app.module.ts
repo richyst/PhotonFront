@@ -8,11 +8,13 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
 import 'hammerjs';
+import { GraficaComponent } from './grafica/grafica.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent
+    HomeComponent,
+    GraficaComponent
   ],
   imports: [
     BrowserModule,
