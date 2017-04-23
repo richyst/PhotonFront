@@ -20,6 +20,6 @@
   display: flex;
   justify-content: center;
 }
-.division{
-  border-right: 1px solid #DDDDDD; 
+.espacio{
+  margin-top: 30px;
 }

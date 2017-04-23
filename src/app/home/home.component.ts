@@ -9,6 +9,7 @@ import {Observable} from 'rxjs/Rx';
   providers:[CommandService]
 })
 export class HomeComponent implements OnInit {
+  // ----------- Datos formulario y Photon
   public formulario : boolean =true;
   public status :string;
   public sep: number;
@@ -20,18 +21,38 @@ export class HomeComponent implements OnInit {
   public diam2 : number;
   public forma:string;
   public lastH:string;
+  // ---------- Datos Graficas
   public historial=[];
   public niveles = [];
-  public axis=[];
+
+  public decD:any;
+  public decL:any;
+  public decC:any;
+
+  public valsA;
+  public valsM;
+  public valsS;
+  public meses =[];
+  public semanas=[];
+  public dias =[];
+
+  public refM=[
+    'Ene','Feb','Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov','Dic'
+  ];
+  public refD=[
+    'Dom','Lun','Mar', 'Mie','Jue','Vie','Sab'
+  ]
   public fechas=[];
   public fechasOri=[];
   public ticks:number;
   public events : boolean;
   public formatoHora:string;
-  public tamCom : string;
-  public tamComR : string;
-  public comp :boolean;
   public line = 'line';
+  public grafVar = 'bar';
+
+  public fex:boolean=true;
+  public barras:boolean=false;
+
   public volumenData: Array<any>= [
     {
       data:this.historial,
@@ -44,7 +65,7 @@ export class HomeComponent implements OnInit {
       label: 'Nivel de Agua'
     }
   ];
-  public lineChartData2: Array<any>= [
+  public comparacion: Array<any>= [
     {
       data:this.niveles,
       label: 'Nivel de Agua'
@@ -71,6 +92,21 @@ export class HomeComponent implements OnInit {
     },
     legend:{
       display:true
+    }
+  };
+  public BarraOptions:any = {
+    responsive: true,
+    scaleShowVerticalLines: false,
+    scales:{
+      xAxes:[{
+        ticks:{
+          fontSize:12,
+          minRotation:0
+        }
+      }]
+    },
+    legend:{
+      display:false
     }
   };
   public nivelesOptions:any = {
@@ -115,6 +151,20 @@ export class HomeComponent implements OnInit {
       pointHoverBorderColor: 'rgba(77,83,96,1)'
     }
   ];
+  public barraAzul:Array<any> = [
+    { // dark grey
+      backgroundColor: 'rgba(150,243,255,0.4)',
+      borderColor: 'rgba(0,188,212,1)',
+      borderWidth:1
+    }
+  ];
+  public barraGris:Array<any> = [
+    { // dark grey
+      backgroundColor: 'rgba(77,83,96,0.4)',
+      borderColor: 'rgba(77,83,96,1)',
+      borderWidth:1
+    }
+  ];
   public mezclados:Array<any> = [
     { // dark grey
       backgroundColor: 'rgba(150,243,255,0.2)',
@@ -136,8 +186,6 @@ export class HomeComponent implements OnInit {
   constructor(private _httpService: CommandService) { }
 
   ngOnInit() {
-    this.comp=false;
-    this.tamCom='col-xs-12'
     this.formatoHora='FechaExacta';
     this.sep= 5;
     this.diam= 30;
@@ -203,59 +251,123 @@ export class HomeComponent implements OnInit {
     return volumen;
 
   }
-  comparar(val:number):void{
-    if(val==0){
-      this.tamCom='col-xs-12';
-      this.tamComR='col-xs-12';
-      this.comp=false;
+
+  graficasT():void{
+    this.valsA= new Array(0,0,0,0,0,0,0,0,0,0,0,0);
+    this.valsM=new Array(0,0,0,0,0,0);
+    this.valsS=new Array(0,0,0,0,0,0,0);
+    this.meses =[0,1,2,3,4,5,6,7,8,9,10,11];
+    this.semanas=[0,1,2,3,4,5,6];
+    this.dias =[0,1,2,3,4,5,6];
+    var ahora = new Date().getTime();
+    var prevM=100;
+    for(var i = 0; i<this.historial.length;i++){
+      if((ahora-this.fechasOri[i])<31536000000){
+        var mes = new Date(this.fechasOri[i]).getMonth();
+        this.valsA[mes]=this.valsA[mes]+1;
+      }
+      if((ahora-this.fechasOri[i])<2629746000){
+        if((ahora-this.fechasOri[i])<(2629746000*(i+1))){
+          var semana = parseInt(''+new Date(this.fechasOri[i]).getDate()/6);
+          this.valsM[semana]=this.valsM[semana]+1;
+        }
+      }
+      if((ahora-this.fechasOri[i])<604800000){
+        var dia = parseInt(''+new Date(this.fechasOri[i]).getDay());
+        this.valsS[dia]=this.valsS[dia]+1;
+      }
     }
-    if(val==1){
-      this.tamCom='col-xs-6 division' ;
-      this.tamComR='col-xs-6';
-      this.comp=true;
+
+    this.meses= this.meses.filter(function(elem, index, self) {
+      return index == self.indexOf(elem);
+    })
+    this.semanas= this.semanas.filter(function(elem, index, self) {
+      return index == self.indexOf(elem);
+    })
+    this.dias= this.dias.filter(function(elem, index, self) {
+      return index == self.indexOf(elem);
+    })
+
+    var tmpM=this.meses;
+    var tmpS=this.semanas;
+    var tmpD=this.dias;
+    this.meses =[];
+    this.semanas=[];
+    this.dias =[];
+    var anoC = new Date(ahora).getFullYear();
+    var mesC = new Date(ahora).getMonth();
+    var semanaC = parseInt(''+new Date(ahora).getDate()/6);
+    var diaC = new Date(ahora).getDay()
+
+    for(var i = 0; i<this.valsA.length;i++){
+      var mesCh = (mesC+13)%12;
+      this.meses.push(mesCh);
+      mesC++;
+    }
+    for(var i = 0; i<this.valsM.length;i++){
+      var semCh = (semanaC+7)%6;
+      this.semanas.push(semCh);
+      semanaC++;
+    }
+    for(var i = 0; i<this.valsS.length;i++){
+      var diaCh = (diaC+8)%7;
+      this.dias.push(diaCh);
+      diaC++;
+    }
+    var tmpAn=this.valsA;
+    var tmpMe=this.valsM;
+    var tmpSe=this.valsS;
+    this.valsA= [];
+    this.valsM=[];
+    this.valsS=[];
+
+    for(var i = 0; i<this.meses.length;i++){
+      this.valsA.push(tmpAn[this.meses[i]]);
+    }
+    for(var i = 0; i<this.semanas.length;i++){
+      this.valsM.push(tmpMe[this.semanas[i]]);
+    }
+    for(var i = 0; i<this.dias.length;i++){
+      this.valsS.push(tmpSe[this.dias[i]]);
+    }
+
+    for(var i = 0; i<this.meses.length;i++){
+      this.meses[i]=this.refM[this.meses[i]];
+    }
+    for(var i = 0; i<this.semanas.length;i++){
+      if(i==5){
+        this.semanas[5]='Esta semana';
+      }else{
+        this.semanas[i]='Hace '+(5-i)+' semanas';
+      }
+
+    }
+    for(var i = 0; i<this.dias.length;i++){
+      if(i==6){
+        this.dias[i]='Hoy';
+      }else{
+        this.dias[i]=this.refD[this.dias[i]];
+      }
     }
   }
 
   recolecta(data):void{
     for(var i = 0;i<data.feeds.length;i++){
       var num = i+1;
-      this.axis[i]=('X'+num);
-      this.parseoFechas("la");
-      if(this.formatoHora=='FechaExacta'){
-        this.fechas[i]=((new Date(Date.parse(data.feeds[i].created_at))).getDate())
+      this.fechas[i]=((new Date(Date.parse(data.feeds[i].created_at))).getDate())
         + '/'
+        +this.refM[(new Date(Date.parse(data.feeds[i].created_at))).getMonth()]
+        +'/'
         +((new Date(Date.parse(data.feeds[i].created_at))).getFullYear()).toString().slice(2,4)
         +'-'+
         ((new Date(Date.parse(data.feeds[i].created_at))).getHours())
         +':'+
         ((new Date(Date.parse(data.feeds[i].created_at))).getMinutes());
-      }
-      if(this.formatoHora=='Estacion'){
-        this.fechas[i]=((new Date(Date.parse(data.feeds[i].created_at))).getDate())
-        + '/'
-        +((new Date(Date.parse(data.feeds[i].created_at))).getFullYear()).toString().slice(2,4)
-        +'-'+
-        ((new Date(Date.parse(data.feeds[i].created_at))).getHours())
-        +':'+
-        ((new Date(Date.parse(data.feeds[i].created_at))).getMinutes());
-      }
-
+      this.fechasOri[i]=(new Date(Date.parse(data.feeds[i].created_at))).getTime();
       this.historial[i]=(this.calc(parseInt(data.feeds[i].field1)));
       this.niveles[i]=(parseInt(data.feeds[i].field1));
 
     }
-    console.log(this.fechas);
-  }
-
-  parseoFechas(tipo): void{
-    if(tipo=='Ano'){
-
-    }
-    if(tipo=='Mes'){
-
-    }
-    if(tipo=='Dia'){
-
-    }
+    this.graficasT();
   }
 }

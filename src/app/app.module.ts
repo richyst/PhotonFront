@@ -9,12 +9,14 @@ import { HomeComponent } from './home/home.component';
 import { ChartsModule } from 'ng2-charts/ng2-charts';
 import 'hammerjs';
 import { GraficaComponent } from './grafica/grafica.component';
+import { GraficaCuadComponent } from './grafica-cuad/grafica-cuad.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
-    GraficaComponent
+    GraficaComponent,
+    GraficaCuadComponent
   ],
   imports: [
     BrowserModule,

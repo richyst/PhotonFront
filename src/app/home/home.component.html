@@ -58,41 +58,42 @@
         </div>
         <hr>
         <div class="row">
-          <h3 >Resumen de Información</h3>
+          <h3 class="text-muted calcs">Resumen de Información</h3>
         </div>
-        <hr>
-        <div [class]="tamCom">
+        <br>
+        <div>
           <md-select class="col-xs-12" placeholder="Formato para análisis de datos" [(ngModel)]="formatoHora" name="formato">
             <md-option value="FechaExacta">Fecha Exacta</md-option>
-            <md-option value="Estación">Estación</md-option>
+            <md-option value="PromAño">Valores Último Año</md-option>
+            <md-option value="PromMes">Valores Último Mes</md-option>
+            <md-option value="PromSem">Valores Última Semana</md-option>
           </md-select>
         </div>
-        <div  [class]="tamComR" *ngIf="comp">
-          <md-select class="col-xs-12" placeholder="Formato para análisis de datos" [(ngModel)]="formatoHora" name="formato">
-            <md-option value="FechaExacta">Fecha Exacta</md-option>
-            <md-option value="Estación">Estación</md-option>
-          </md-select>
+
+        <div class="col-xs-12 espacio" *ngIf="formatoHora=='FechaExacta'">
+          <app-grafica [data]="comparacion" [labels]="fechas" [colors]="mezclados"[options]="FechaExOptions" [tipo]='line'></app-grafica>
         </div>
         <div>
-          <div [class]="tamCom">
-            <app-grafica [data]="lineChartData2" [labels]="fechas" [colors]="mezclados"[options]="FechaExOptions" [tipo]='line'></app-grafica>
 
-          </div>
-          <div [class]="tamComR" *ngIf="comp">
-              <app-grafica [data]="lineChartData" [options]="lineChartOptions1" [labels]="axis" [colors]="azul" [tipo]='line'></app-grafica>
-          </div>
         </div>
-        <button md-raised-button (click)="comparar(1)" *ngIf="!comp">Comparar</button>
-        <button md-raised-button (click)="comparar(0)" *ngIf="comp">Borrar Comparación</button>
+        <div class="col-xs-12 espacio" *ngIf="formatoHora=='PromAño'">
+          <app-grafica-cuad [data]="valsA" [labels]="meses" [colors]="barraAzul"[options]="BarraOptions" [tipo]='grafVar'></app-grafica-cuad>
+        </div>
+        <div class="col-xs-12 espacio" *ngIf="formatoHora=='PromMes'">
+          <app-grafica-cuad [data]="valsM" [labels]="semanas" [colors]="barraGris"[options]="BarraOptions" [tipo]='grafVar'></app-grafica-cuad>
+        </div>
+        <div class="col-xs-12 espacio" *ngIf="formatoHora=='PromSem'">
+          <app-grafica-cuad [data]="valsS" [labels]="dias" [colors]="barraAzul"[options]="BarraOptions" [tipo]='grafVar'></app-grafica-cuad>
+        </div>
         <hr>
         <div class="row">
-          <div class="col-md-12">
+          <div class="col-xs-12 ">
             <h3 class="text-muted">Historial de Volumen</h3>
-            <app-grafica [data]="volumenData" [labels]="axis" [colors]="gris" [options]="volumenOptions" [tipo]='line'></app-grafica>
+            <app-grafica [data]="volumenData" [labels]="fechas" [colors]="gris" [options]="volumenOptions" [tipo]='line'></app-grafica>
           </div>
-          <div class="col-md-12">
+          <div class="col-xs-12">
             <h3 class="text-muted">Historial de Niveles</h3>
-            <app-grafica [data]="nivelesData" [labels]="axis" [options]="nivelesOptions" [colors]="azul" [tipo]='line'></app-grafica>
+            <app-grafica [data]="nivelesData" [labels]="fechas" [options]="nivelesOptions" [colors]="azul" [tipo]='line'></app-grafica>
           </div>
         </div>
         <br>
