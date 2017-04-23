@@ -3,7 +3,7 @@
   <md-card >
     <md-card-header color="primary">
       <div md-card-avatar style="background-image: url('assets/photon.png'); background-size:cover;"></div>
-      <md-card-title>Sensor de Nivel de Agua <span *ngIf="status" class="glyphicon glyphicon-ok-sign text-off"></span><span *ngIf="!status" class="glyphicon glyphicon-remove-sign text-danger"></span> </md-card-title>
+      <md-card-title>Sensor de Nivel de Agua <span *ngIf="status" class="glyphicon glyphicon-ok-sign text-off" mdTooltip="Photon Conectado!!" mdTooltipPosition="right"></span><span *ngIf="!status" class="glyphicon glyphicon-remove-sign text-danger" mdTooltip="Photon Desconectado!!" mdTooltipPosition="right"></span> </md-card-title>
       <md-card-subtitle>
         <h6 *ngIf="!status" class="text-danger"> Ultima conexión: {{lastH}}</h6>
         <h6 *ngIf="status">A01022029 | A01335167 | A01336386 | A01337828 | A01273322</h6>
@@ -14,7 +14,7 @@
     <md-card-content>
       <div *ngIf="formulario">
         <h3>Entradas de Datos.</h3>
-        <md-radio-group [(ngModel)]="forma" class="textoVals" (ngModelChange)="eventos()">
+        <md-radio-group [(ngModel)]="forma" class="textoVals" (ngModelChange)="recalc()">
           <md-radio-button value="Cilindro">Cilindro</md-radio-button>
           <md-radio-button value="Prisma">Prisma Cuadrangular</md-radio-button>
           <md-radio-button value="Cono">Cono Frustum</md-radio-button>
@@ -23,28 +23,31 @@
         <br>
         <br>
         <md-input-container class="tamanoInp">
-          <input mdInput type="number" name="sep" (ngModelChange)="eventos()" [(ngModel)]="sep" #name="ngModel" min="1" placeholder="Separación de contactos. (cm)">
+          <input mdInput type="number" name="sep" (ngModelChange)="recalc()" [(ngModel)]="sep" #name="ngModel" min="1" placeholder="Separación de contactos. (cm)">
         </md-input-container>
         <br>
         <br>
         <div *ngIf="forma=='Prisma'">
           <md-input-container class="tamanoInp">
-            <input mdInput type="number" name="lado" (ngModelChange)="eventos()" [(ngModel)]="lado" #name="ngModel" min="1" placeholder="Lado de base. (cm)">
+            <input mdInput type="number" name="lado" (ngModelChange)="recalc()" [(ngModel)]="lado" #name="ngModel" min="1" placeholder="Lado de base. (cm)">
           </md-input-container>
         </div>
         <div *ngIf="forma=='Cono'">
           <md-input-container class="tamanoInp">
-            <input mdInput type="number" name="diam1" (ngModelChange)="eventos()" [(ngModel)]="diam1" #name="ngModel" min="1" placeholder="Diametro menor contenedor. (cm)">
+            <input mdInput type="number" name="diam1" (ngModelChange)="recalc()" [(ngModel)]="diam1" #name="ngModel" min="1" placeholder="Diametro menor contenedor. (cm)">
           </md-input-container>
           <md-input-container class="tamanoInp">
-            <input mdInput type="number" name="diam2" (ngModelChange)="eventos()" [(ngModel)]="diam2" #name="ngModel" min="1" placeholder="Diametro mayor contenedor. (cm)">
+            <input mdInput type="number" name="diam2" (ngModelChange)="recalc()" [(ngModel)]="diam2" #name="ngModel" min="1" placeholder="Diametro mayor contenedor. (cm)">
           </md-input-container>
         </div>
         <div *ngIf="forma=='Cilindro'">
           <md-input-container class="tamanoInp">
-            <input mdInput type="number" name="diam" (ngModelChange)="eventos()" [(ngModel)]="diam" #name="ngModel" min="1" placeholder="Diametro contenedor. (cm)">
+            <input mdInput type="number" name="diam" (ngModelChange)="recalc()" [(ngModel)]="diam" #name="ngModel" min="1" placeholder="Diametro contenedor. (cm)">
           </md-input-container>
         </div>
+        <md-input-container class="tamanoInp">
+          <input mdInput type="number" diabled name="vol" (ngModelChange)="recalc()" [(ngModel)]="vol" #name="ngModel" placeholder="Volumen (litros)">
+        </md-input-container>
       </div>
       <div *ngIf="!formulario">
         <div class="row">
@@ -64,9 +67,9 @@
         <div>
           <md-select class="col-xs-12" placeholder="Formato para análisis de datos" [(ngModel)]="formatoHora" name="formato">
             <md-option value="FechaExacta">Fecha Exacta</md-option>
-            <md-option value="PromAño">Valores Último Año</md-option>
-            <md-option value="PromMes">Valores Último Mes</md-option>
-            <md-option value="PromSem">Valores Última Semana</md-option>
+            <md-option value="PromAño">Cantidad de Registros en el Último Año</md-option>
+            <md-option value="PromMes">Cantidad de Registros en el Último Mes</md-option>
+            <md-option value="PromSem">Cantidad de Registros en la Última Semana</md-option>
           </md-select>
         </div>
 

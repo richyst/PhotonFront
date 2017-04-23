@@ -192,11 +192,13 @@ export class HomeComponent implements OnInit {
     this.niv=1;
     this.diam1=25;
     this.diam2=30;
+    this.lado=20;
     this.forma='Cilindro';
     let timer = Observable.timer(0,5000);
     timer.subscribe(t=>{this.infoGeneral();this.ticks=t;});
     let timer1 = Observable.timer(0,15000);
     timer1.subscribe(t=>{this.eventos(); });
+    this.recalc();
   }
   getNivel():void{
     if(this.status){
@@ -251,8 +253,20 @@ export class HomeComponent implements OnInit {
     return volumen;
 
   }
+  recalc():void{
+      var volumen;
+      if(this.forma=='Cilindro'){
+          this.vol=((3.141592)*((this.diam/2)*(this.diam/2)*(this.sep*this.niv)))*.001;
+      }
+      if(this.forma=='Prisma'){
+          this.vol=(this.lado*this.lado)*(this.sep*this.niv)*.001;
+      }
+      if(this.forma=='Cono'){
+          this.vol=((3.141592*(this.niv*this.sep))/3)*(((this.diam2/2)*(this.diam2/2))+((this.diam1/2)*(this.diam2/2))+((this.diam/2)*(this.diam/2)))*.001;
+      }
+  }
 
-  graficasT():void{
+  graficasC():void{
     this.valsA= new Array(0,0,0,0,0,0,0,0,0,0,0,0);
     this.valsM=new Array(0,0,0,0,0,0);
     this.valsS=new Array(0,0,0,0,0,0,0);
@@ -368,6 +382,6 @@ export class HomeComponent implements OnInit {
       this.niveles[i]=(parseInt(data.feeds[i].field1));
 
     }
-    this.graficasT();
+    this.graficasC();
   }
 }
