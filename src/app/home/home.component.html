@@ -3,7 +3,7 @@
   <md-card >
     <md-card-header color="primary">
       <div md-card-avatar style="background-image: url('assets/photon.png'); background-size:cover;"></div>
-      <md-card-title>Sensor de Nivel de Agua <span *ngIf="status" class="glyphicon glyphicon-ok-sign text-off" mdTooltip="Photon Conectado!!" mdTooltipPosition="right"></span><span *ngIf="!status" class="glyphicon glyphicon-remove-sign text-danger" mdTooltip="Photon Desconectado!!" mdTooltipPosition="right"></span> </md-card-title>
+      <md-card-title>Sensor de Nivel de Agua <span *ngIf="status" class="glyphicon glyphicon-ok-sign text-succss" mdTooltip="Photon Conectado!!" mdTooltipPosition="right"></span><span *ngIf="!status" class="glyphicon glyphicon-remove-sign text-danger" mdTooltip="Photon Desconectado!!" mdTooltipPosition="right"></span> </md-card-title>
       <md-card-subtitle>
         <h6 *ngIf="!status" class="text-danger"> Ultima conexión: {{lastH}}</h6>
         <h6 *ngIf="status">A01022029 | A01335167 | A01336386 | A01337828 | A01273322</h6>
@@ -51,11 +51,11 @@
       </div>
       <div *ngIf="!formulario">
         <div class="row">
-          <div class="calcs">
+          <div class="calcs" mdTooltip="Información puede ser anviada por el photon cada 5 segs pero solo se lee cada 5 segs" mdTooltipPosition="below">
             <h3 class="textoVals " *ngIf="status">Volumen calculado: {{vol}} litros.</h3>
             <h3 class="textoVals " *ngIf="!status">Último volumen calculado: {{vol}} litros.</h3>
-            <h3 class="textoVals " *ngIf="status" >Nivel actual: {{niv}} litros.</h3>
-            <h3 class="textoVals " *ngIf="!status" >Último nivel leído: {{niv}}</h3>
+            <h3 class="textoVals " *ngIf="status" >Nivel actual: {{niv}}.</h3>
+            <h3 class="textoVals " *ngIf="!status" >Último nivel leído: {{niv}}.</h3>
           </div>
 
         </div>
@@ -73,32 +73,35 @@
           </md-select>
         </div>
 
-        <div class="col-xs-12 espacio" *ngIf="formatoHora=='FechaExacta'">
-          <app-grafica [data]="comparacion" [labels]="fechas" [colors]="mezclados"[options]="FechaExOptions" [tipo]='line'></app-grafica>
-        </div>
         <div>
+          <div class="col-xs-12 espacio" *ngIf="formatoHora=='FechaExacta' && actualizar">
+            <app-grafica [data]="comparacion" [labels]="fechas" [colors]="mezclados"[options]="FechaExOptions" [tipo]='line'></app-grafica>
+          </div>
+          <div *ngIf="actualizar">
+            <div class="col-xs-12 espacio" *ngIf="formatoHora=='PromAño' && valsA">
+              <app-grafica-cuad [data]="valsA" [labels]="meses" [colors]="barraAzul"[options]="BarraOptions" [tipo]='grafVar'></app-grafica-cuad>
+            </div>
+            <div class="col-xs-12 espacio" *ngIf="formatoHora=='PromMes' && valsM">
+              <app-grafica-cuad [data]="valsM" [labels]="semanas" [colors]="barraGris"[options]="BarraOptions" [tipo]='grafVar'></app-grafica-cuad>
+            </div>
+            <div class="col-xs-12 espacio" *ngIf="formatoHora=='PromSem' && valsS">
+              <app-grafica-cuad [data]="valsS" [labels]="dias" [colors]="barraAzul"[options]="BarraOptions" [tipo]='grafVar'></app-grafica-cuad>
+            </div>
+          </div>
 
-        </div>
-        <div class="col-xs-12 espacio" *ngIf="formatoHora=='PromAño'">
-          <app-grafica-cuad [data]="valsA" [labels]="meses" [colors]="barraAzul"[options]="BarraOptions" [tipo]='grafVar'></app-grafica-cuad>
-        </div>
-        <div class="col-xs-12 espacio" *ngIf="formatoHora=='PromMes'">
-          <app-grafica-cuad [data]="valsM" [labels]="semanas" [colors]="barraGris"[options]="BarraOptions" [tipo]='grafVar'></app-grafica-cuad>
-        </div>
-        <div class="col-xs-12 espacio" *ngIf="formatoHora=='PromSem'">
-          <app-grafica-cuad [data]="valsS" [labels]="dias" [colors]="barraAzul"[options]="BarraOptions" [tipo]='grafVar'></app-grafica-cuad>
-        </div>
-        <hr>
-        <div class="row">
-          <div class="col-xs-12 ">
-            <h3 class="text-muted">Historial de Volumen</h3>
-            <app-grafica [data]="volumenData" [labels]="fechas" [colors]="gris" [options]="volumenOptions" [tipo]='line'></app-grafica>
-          </div>
-          <div class="col-xs-12">
-            <h3 class="text-muted">Historial de Niveles</h3>
-            <app-grafica [data]="nivelesData" [labels]="fechas" [options]="nivelesOptions" [colors]="azul" [tipo]='line'></app-grafica>
+          <hr>
+          <div class="row" *ngIf="actualizar">
+            <div class="col-xs-12 ">
+              <h3 class="text-muted">Historial de Volumen</h3>
+              <app-grafica [data]="volumenData" [labels]="fechas" [colors]="gris" [options]="volumenOptions" [tipo]='line'></app-grafica>
+            </div>
+            <div class="col-xs-12">
+              <h3 class="text-muted">Historial de Niveles</h3>
+              <app-grafica [data]="nivelesData" [labels]="fechas" [options]="nivelesOptions" [colors]="azul" [tipo]='line'></app-grafica>
+            </div>
           </div>
         </div>
+
         <br>
       </div>
     </md-card-content>

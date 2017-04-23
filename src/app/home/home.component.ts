@@ -52,6 +52,7 @@ export class HomeComponent implements OnInit {
 
   public fex:boolean=true;
   public barras:boolean=false;
+  public actualizar:boolean=true;
 
   public volumenData: Array<any>= [
     {
@@ -196,7 +197,7 @@ export class HomeComponent implements OnInit {
     this.forma='Cilindro';
     let timer = Observable.timer(0,5000);
     timer.subscribe(t=>{this.infoGeneral();this.ticks=t;});
-    let timer1 = Observable.timer(0,15000);
+    let timer1 = Observable.timer(0,10000);
     timer1.subscribe(t=>{this.eventos(); });
     this.recalc();
   }
@@ -205,7 +206,7 @@ export class HomeComponent implements OnInit {
       this._httpService.getNivel()
         .subscribe(
           data => {
-            // console.log(data);
+            console.log(data);
             this.niv=data.result;
           },
           error => console.log(error)
@@ -219,7 +220,7 @@ export class HomeComponent implements OnInit {
     this._httpService.infoGen()
       .subscribe(
         data => {
-          // console.log(data);
+          console.log(data);
           this.status=data.connected;
           this.lastH=data.last_heard;
           this.getNivel();
@@ -228,12 +229,14 @@ export class HomeComponent implements OnInit {
       );
   }
   eventos():void{
+    this.actualizar=false;
     this._httpService.getEvents()
       .subscribe(
         data => {
-          // console.log(data);
+          console.log(data);
           this.recolecta(data);
           this.events=true;
+          this.actualizar=true;
         },
         error => {console.log(error);this.events=false;}
       );
@@ -267,6 +270,13 @@ export class HomeComponent implements OnInit {
   }
 
   graficasC():void{
+    this.valsA=null;
+    this.valsM=null;
+    this.valsS=null;
+    this.meses =null;
+    this.semanas=null;
+    this.dias =null;
+
     this.valsA= new Array(0,0,0,0,0,0,0,0,0,0,0,0);
     this.valsM=new Array(0,0,0,0,0,0);
     this.valsS=new Array(0,0,0,0,0,0,0);
@@ -368,20 +378,37 @@ export class HomeComponent implements OnInit {
   recolecta(data):void{
     for(var i = 0;i<data.feeds.length;i++){
       var num = i+1;
-      this.fechas[i]=((new Date(Date.parse(data.feeds[i].created_at))).getDate())
-        + '/'
-        +this.refM[(new Date(Date.parse(data.feeds[i].created_at))).getMonth()]
-        +'/'
-        +((new Date(Date.parse(data.feeds[i].created_at))).getFullYear()).toString().slice(2,4)
-        +'-'+
-        ((new Date(Date.parse(data.feeds[i].created_at))).getHours())
-        +':'+
-        ((new Date(Date.parse(data.feeds[i].created_at))).getMinutes());
-      this.fechasOri[i]=(new Date(Date.parse(data.feeds[i].created_at))).getTime();
-      this.historial[i]=(this.calc(parseInt(data.feeds[i].field1)));
-      this.niveles[i]=(parseInt(data.feeds[i].field1));
+      if((new Date(Date.parse(data.feeds[i].created_at))).getMinutes()<10){
+        this.fechas[i]=((new Date(Date.parse(data.feeds[i].created_at))).getDate())
+          + '/'
+          +this.refM[(new Date(Date.parse(data.feeds[i].created_at))).getMonth()]
+          +'/'
+          +((new Date(Date.parse(data.feeds[i].created_at))).getFullYear()).toString().slice(2,4)
+          +'-'+
+          ((new Date(Date.parse(data.feeds[i].created_at))).getHours())
+          +':0'+
+          ((new Date(Date.parse(data.feeds[i].created_at))).getMinutes());
+        this.fechasOri[i]=(new Date(Date.parse(data.feeds[i].created_at))).getTime();
+        this.historial[i]=(this.calc(parseInt(data.feeds[i].field1)));
+        this.niveles[i]=(parseInt(data.feeds[i].field1));
+      }else{
+        this.fechas[i]=((new Date(Date.parse(data.feeds[i].created_at))).getDate())
+          + '/'
+          +this.refM[(new Date(Date.parse(data.feeds[i].created_at))).getMonth()]
+          +'/'
+          +((new Date(Date.parse(data.feeds[i].created_at))).getFullYear()).toString().slice(2,4)
+          +'-'+
+          ((new Date(Date.parse(data.feeds[i].created_at))).getHours())
+          +':'+
+          ((new Date(Date.parse(data.feeds[i].created_at))).getMinutes());
+        this.fechasOri[i]=(new Date(Date.parse(data.feeds[i].created_at))).getTime();
+        this.historial[i]=(this.calc(parseInt(data.feeds[i].field1)));
+        this.niveles[i]=(parseInt(data.feeds[i].field1));
+      }
+
 
     }
+
     this.graficasC();
   }
 }
