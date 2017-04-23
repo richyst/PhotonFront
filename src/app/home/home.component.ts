@@ -23,12 +23,18 @@ export class HomeComponent implements OnInit {
   public historial=[];
   public niveles = [];
   public axis=[];
-  public fechas:Date[];
+  public fechas=[];
   public ticks:number;
   public events : boolean;
   public lineChartData: Array<any>= [
     {
-      data: this.historial,
+      data:this.historial,
+      label: 'Volumen de Agua (litros)'
+    }
+  ];
+  public lineChartData1: Array<any>= [
+    {
+      data:this.niveles,
       label: 'Nivel de Agua'
     }
   ];
@@ -37,7 +43,7 @@ export class HomeComponent implements OnInit {
     scales:{
       yAxes:[{
         ticks:{
-          beginsArZero:true
+          beginsAtZero:true
         }
       }]
     }
@@ -47,14 +53,9 @@ export class HomeComponent implements OnInit {
     scales:{
       yAxes:[{
         ticks:{
-          beginsArZero:true,
+          beginsAtZero:true,
           max:7,
           min:0
-        }
-      }],
-      xAxes:[{
-        ticks:{
-          max:40
         }
       }]
     }
@@ -88,7 +89,6 @@ export class HomeComponent implements OnInit {
     this.diam1=25;
     this.diam2=30;
     this.forma='Cilindro';
-    this.recalc();
     let timer = Observable.timer(0,5000);
     timer.subscribe(t=>{this.infoGeneral();this.ticks=t;});
     let timer1 = Observable.timer(0,15000);
@@ -120,22 +120,11 @@ export class HomeComponent implements OnInit {
   eventos():void{
     this._httpService.getEvents()
       .subscribe(
-        data => {console.log(data); this.recolecta(data);this.events=true;},
+        data => {console.log(data);this.recolecta(data);this.events=true;},
         error => {console.log(error);this.events=false;}
       );
   }
-  recalc():void{
-    if(this.forma=='Cilindro'){
-        this.vol=((3.141592)*((this.diam/2)*(this.diam/2)*(this.sep*this.niv)))*.001;
-    }
-    if(this.forma=='Prisma'){
-        this.vol=(this.lado*this.lado)*(this.sep*this.niv)*.001;
-    }
-    if(this.forma=='Cono'){
-        this.vol=((3.141592*(this.niv*this.sep))/3)*(((this.diam2/2)*(this.diam2/2))+((this.diam1/2)*(this.diam2/2))+((this.diam/2)*(this.diam/2)))*.001;
-    }
 
-  }
   calc(niv) : number{
     var volumen;
     if(this.forma=='Cilindro'){
@@ -152,16 +141,12 @@ export class HomeComponent implements OnInit {
   }
 
   recolecta(data):void{
-    this.axis=[];
-    this.historial=[];
-    this.fechas=[];
     for(var i = 0;i<data.feeds.length;i++){
       var num = i+1;
-      this.axis.push('X'+num);
-      this.historial.push(parseInt(data.feeds[i].field1));
-      this.niveles.push(parseInt(data.feeds[i].field1));
-      this.fechas.push(new Date(Date.parse(data.feeds[i].created_at)));
-      this.historial[i]=this.calc(this.historial.pop());
+      this.axis[i]=('X'+num);
+      this.fechas[i]=(new Date(Date.parse(data.feeds[i].created_at)));
+      this.historial[i]=(this.calc(parseInt(data.feeds[i].field1)));
+      this.niveles[i]=(parseInt(data.feeds[i].field1));
 
     }
     console.log(this.historial);

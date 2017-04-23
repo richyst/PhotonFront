@@ -14,7 +14,7 @@
     <md-card-content>
       <div *ngIf="formulario">
         <h3>Entradas de Datos.</h3>
-        <md-radio-group [(ngModel)]="forma" class="textoVals" (ngModelChange)="recalc()">
+        <md-radio-group [(ngModel)]="forma" class="textoVals" (ngModelChange)="eventos()">
           <md-radio-button value="Cilindro">Cilindro</md-radio-button>
           <md-radio-button value="Prisma">Prisma Cuadrangular</md-radio-button>
           <md-radio-button value="Cono">Cono Frustum</md-radio-button>
@@ -23,34 +23,35 @@
         <br>
         <br>
         <md-input-container class="tamanoInp">
-          <input mdInput type="number" name="sep" (ngModelChange)="recalc()" [(ngModel)]="sep" #name="ngModel" min="1" placeholder="Separación de contactos. (cm)">
+          <input mdInput type="number" name="sep" (ngModelChange)="eventos()" [(ngModel)]="sep" #name="ngModel" min="1" placeholder="Separación de contactos. (cm)">
         </md-input-container>
         <br>
         <br>
         <div *ngIf="forma=='Prisma'">
           <md-input-container class="tamanoInp">
-            <input mdInput type="number" name="lado" (ngModelChange)="recalc()" [(ngModel)]="lado" #name="ngModel" min="1" placeholder="Lado de base. (cm)">
+            <input mdInput type="number" name="lado" (ngModelChange)="eventos()" [(ngModel)]="lado" #name="ngModel" min="1" placeholder="Lado de base. (cm)">
           </md-input-container>
         </div>
         <div *ngIf="forma=='Cono'">
           <md-input-container class="tamanoInp">
-            <input mdInput type="number" name="diam1" (ngModelChange)="recalc()" [(ngModel)]="diam1" #name="ngModel" min="1" placeholder="Diametro menor contenedor. (cm)">
+            <input mdInput type="number" name="diam1" (ngModelChange)="eventos()" [(ngModel)]="diam1" #name="ngModel" min="1" placeholder="Diametro menor contenedor. (cm)">
           </md-input-container>
           <md-input-container class="tamanoInp">
-            <input mdInput type="number" name="diam2" (ngModelChange)="recalc()" [(ngModel)]="diam2" #name="ngModel" min="1" placeholder="Diametro mayor contenedor. (cm)">
+            <input mdInput type="number" name="diam2" (ngModelChange)="eventos()" [(ngModel)]="diam2" #name="ngModel" min="1" placeholder="Diametro mayor contenedor. (cm)">
           </md-input-container>
         </div>
         <div *ngIf="forma=='Cilindro'">
           <md-input-container class="tamanoInp">
-            <input mdInput type="number" name="diam" (ngModelChange)="recalc()" [(ngModel)]="diam" #name="ngModel" min="1" placeholder="Diametro contenedor. (cm)">
+            <input mdInput type="number" name="diam" (ngModelChange)="eventos()" [(ngModel)]="diam" #name="ngModel" min="1" placeholder="Diametro contenedor. (cm)">
           </md-input-container>
         </div>
       </div>
       <div *ngIf="!formulario">
         <div class="row">
           <div class="calcs">
-            <h3 class="textoVals " >Volumen Calculado: {{vol}} litros.</h3>
-            <h3 class="textoVals " *ngIf="status" >Nivel Actual: {{niv}} litros.</h3>
+            <h3 class="textoVals " *ngIf="status">Volumen calculado: {{vol}} litros.</h3>
+            <h3 class="textoVals " *ngIf="!status">Último volumen calculado: {{vol}} litros.</h3>
+            <h3 class="textoVals " *ngIf="status" >Nivel actual: {{niv}} litros.</h3>
             <h3 class="textoVals " *ngIf="!status" >Último nivel leído: {{niv}}</h3>
           </div>
 
@@ -62,7 +63,7 @@
             <h3 class="text-muted">Historial de Volumen</h3>
             <div style="display: block;">
               <canvas baseChart width="400" height="100"
-                      [data]="historial"
+                      [datasets]="lineChartData"
                       [labels]="axis"
                       [colors]="lineChartColors1"
                       [options]="lineChartOptions"
@@ -75,7 +76,7 @@
             <h3 class="text-muted">Historial de Niveles</h3>
             <div style="display: block;">
               <canvas baseChart width="400" height="100"
-                      [data]="niveles"
+                      [datasets]="lineChartData1"
                       [labels]="axis"
                       [options]="lineChartOptions1"
                       legend="true"
