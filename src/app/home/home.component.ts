@@ -21,6 +21,7 @@ export class HomeComponent implements OnInit {
   public diam2 : number;
   public forma:string;
   public lastH:string;
+  public realTime:boolean;
   // ---------- Datos Graficas
   public historial=[];
   public niveles = [];
@@ -204,6 +205,7 @@ export class HomeComponent implements OnInit {
   constructor(private _httpService: CommandService) { }
 
   ngOnInit() {
+    this.realTime=true;
     this.formatoHora='FechaExacta';
     this.sep= 5;
     this.diam= 30;
@@ -246,14 +248,18 @@ export class HomeComponent implements OnInit {
       );
   }
   eventos():void{
-    this.actualizar=false;
+    if(this.realTime){
+      this.actualizar=false;
+    }
     this._httpService.getEvents()
       .subscribe(
         data => {
-          // console.log(data);
+          console.log(data);
           this.recolecta(data);
           this.events=true;
-          this.actualizar=true;
+          if(this.realTime){
+            this.actualizar=true;
+          }
         },
         error => {console.log(error);this.events=false;}
       );

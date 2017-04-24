@@ -3,7 +3,16 @@
   <md-card >
     <md-card-header color="primary">
       <div md-card-avatar style="background-image: url('assets/photon.png'); background-size:cover;"></div>
-      <md-card-title>Sensor de Nivel de Agua <span *ngIf="status" class="glyphicon glyphicon-ok-sign text-succss" mdTooltip="Photon Conectado!!" mdTooltipPosition="right"></span><span *ngIf="!status" class="glyphicon glyphicon-remove-sign text-danger" mdTooltip="Photon Desconectado!!" mdTooltipPosition="right"></span> </md-card-title>
+      <md-card-title>
+        Sensor de Nivel de Agua
+        <span *ngIf="status" class="glyphicon glyphicon-ok-sign text-succss" mdTooltip="Photon Conectado!!" mdTooltipPosition="above"></span>
+        <span *ngIf="!status" class="glyphicon glyphicon-remove-sign text-danger" mdTooltip="Photon Desconectado!!" mdTooltipPosition="above"></span>
+        <md-slide-toggle
+            color="primary"
+            mdTooltip="Gráficas en tiempo real o no?" mdTooltipPosition="above"
+            [(ngModel)]="realTime">
+        </md-slide-toggle>
+       </md-card-title>
       <md-card-subtitle>
         <h6 *ngIf="!status" class="text-danger"> Ultima conexión: {{lastH}}</h6>
         <h6 *ngIf="status">A01022029 | A01335167 | A01336386 | A01337828 | A01273322</h6>
