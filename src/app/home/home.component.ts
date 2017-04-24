@@ -254,7 +254,7 @@ export class HomeComponent implements OnInit {
     this._httpService.getEvents()
       .subscribe(
         data => {
-          console.log(data);
+          // console.log(data);
           this.recolecta(data);
           this.events=true;
           if(this.realTime){

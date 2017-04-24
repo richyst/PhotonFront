@@ -60,7 +60,7 @@
       </div>
       <div *ngIf="!formulario">
         <div class="row">
-          <div class="calcs" mdTooltip="Información puede ser anviada por el photon cada 5 segs pero solo se lee cada 5 segs" mdTooltipPosition="below">
+          <div class="calcs" mdTooltip="Información puede ser anviada por el photon cada segundo pero solo se busca cada 5 segs" mdTooltipPosition="below">
             <h3 class="textoVals " *ngIf="status">Volumen calculado: {{vol}} litros.</h3>
             <h3 class="textoVals " *ngIf="!status">Último volumen calculado: {{vol}} litros.</h3>
             <h3 class="textoVals " *ngIf="status" >Nivel actual: {{niv}}.</h3>
