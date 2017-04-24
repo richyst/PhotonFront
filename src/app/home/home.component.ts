@@ -32,6 +32,9 @@ export class HomeComponent implements OnInit {
   public valsA;
   public valsM;
   public valsS;
+  public promA;
+  public promM;
+  public promS;
   public meses =[];
   public semanas=[];
   public dias =[];
@@ -166,6 +169,20 @@ export class HomeComponent implements OnInit {
       borderWidth:1
     }
   ];
+  public barraRoja:Array<any> = [
+    { // dark grey
+      backgroundColor: 'rgba(255,109,109,0.4)',
+      borderColor: 'rgba(255,109,109,1)',
+      borderWidth:1
+    }
+  ];
+  public barraVerde:Array<any> = [
+    { // dark grey
+      backgroundColor: 'rgba(179,255,109,0.4)',
+      borderColor: 'rgba(179,255,109,1)',
+      borderWidth:1
+    }
+  ];
   public mezclados:Array<any> = [
     { // dark grey
       backgroundColor: 'rgba(150,243,255,0.2)',
@@ -206,7 +223,7 @@ export class HomeComponent implements OnInit {
       this._httpService.getNivel()
         .subscribe(
           data => {
-            console.log(data);
+            // console.log(data);
             this.niv=data.result;
           },
           error => console.log(error)
@@ -220,7 +237,7 @@ export class HomeComponent implements OnInit {
     this._httpService.infoGen()
       .subscribe(
         data => {
-          console.log(data);
+          // console.log(data);
           this.status=data.connected;
           this.lastH=data.last_heard;
           this.getNivel();
@@ -233,7 +250,7 @@ export class HomeComponent implements OnInit {
     this._httpService.getEvents()
       .subscribe(
         data => {
-          console.log(data);
+          // console.log(data);
           this.recolecta(data);
           this.events=true;
           this.actualizar=true;
@@ -273,6 +290,9 @@ export class HomeComponent implements OnInit {
     this.valsA=null;
     this.valsM=null;
     this.valsS=null;
+    this.promA=null;
+    this.promM=null;
+    this.promS=null;
     this.meses =null;
     this.semanas=null;
     this.dias =null;
@@ -280,6 +300,11 @@ export class HomeComponent implements OnInit {
     this.valsA= new Array(0,0,0,0,0,0,0,0,0,0,0,0);
     this.valsM=new Array(0,0,0,0,0,0);
     this.valsS=new Array(0,0,0,0,0,0,0);
+
+    this.promA= new Array(0,0,0,0,0,0,0,0,0,0,0,0);
+    this.promM= new Array(0,0,0,0,0,0);
+    this.promS= new Array(0,0,0,0,0,0,0);
+
     this.meses =[0,1,2,3,4,5,6,7,8,9,10,11];
     this.semanas=[0,1,2,3,4,5,6];
     this.dias =[0,1,2,3,4,5,6];
@@ -289,18 +314,22 @@ export class HomeComponent implements OnInit {
       if((ahora-this.fechasOri[i])<31536000000){
         var mes = new Date(this.fechasOri[i]).getMonth();
         this.valsA[mes]=this.valsA[mes]+1;
+        this.promA[mes]=this.promA[mes]+this.historial[i];
       }
       if((ahora-this.fechasOri[i])<2629746000){
         if((ahora-this.fechasOri[i])<(2629746000*(i+1))){
           var semana = parseInt(''+new Date(this.fechasOri[i]).getDate()/6);
           this.valsM[semana]=this.valsM[semana]+1;
+          this.promM[semana]=this.promM[semana]+this.historial[i];
         }
       }
       if((ahora-this.fechasOri[i])<604800000){
         var dia = parseInt(''+new Date(this.fechasOri[i]).getDay());
         this.valsS[dia]=this.valsS[dia]+1;
+        this.promS[dia]=this.promS[dia]+this.historial[i];
       }
     }
+
 
     this.meses= this.meses.filter(function(elem, index, self) {
       return index == self.indexOf(elem);
@@ -311,6 +340,7 @@ export class HomeComponent implements OnInit {
     this.dias= this.dias.filter(function(elem, index, self) {
       return index == self.indexOf(elem);
     })
+
 
     var tmpM=this.meses;
     var tmpS=this.semanas;
@@ -338,22 +368,45 @@ export class HomeComponent implements OnInit {
       this.dias.push(diaCh);
       diaC++;
     }
+
     var tmpAn=this.valsA;
     var tmpMe=this.valsM;
     var tmpSe=this.valsS;
-    this.valsA= [];
+    this.valsA=[];
     this.valsM=[];
     this.valsS=[];
+    var tmpPA=this.promA;
+    var tmpPM=this.promM;
+    var tmpPS=this.promS;
+    this.promA=[];
+    this.promM=[];
+    this.promS=[];
 
     for(var i = 0; i<this.meses.length;i++){
       this.valsA.push(tmpAn[this.meses[i]]);
+      if(tmpAn[this.meses[i]]==0){
+        this.promA.push(0);
+      }else{
+        this.promA.push(tmpPA[this.meses[i]]/tmpAn[this.meses[i]]);
+      }
     }
     for(var i = 0; i<this.semanas.length;i++){
       this.valsM.push(tmpMe[this.semanas[i]]);
+      if(tmpMe[this.semanas[i]]==0){
+        this.promM.push(0);
+      }else{
+        this.promM.push(tmpPM[this.semanas[i]]/tmpMe[this.semanas[i]]);
+      }
     }
     for(var i = 0; i<this.dias.length;i++){
       this.valsS.push(tmpSe[this.dias[i]]);
+      if(tmpSe[this.dias[i]]==0){
+        this.promS.push(0);
+      }else{
+        this.promS.push(tmpPS[this.dias[i]]/tmpSe[this.dias[i]]);
+      }
     }
+
 
     for(var i = 0; i<this.meses.length;i++){
       this.meses[i]=this.refM[this.meses[i]];
@@ -374,6 +427,7 @@ export class HomeComponent implements OnInit {
       }
     }
   }
+
 
   recolecta(data):void{
     for(var i = 0;i<data.feeds.length;i++){

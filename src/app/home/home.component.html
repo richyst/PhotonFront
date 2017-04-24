@@ -67,9 +67,12 @@
         <div>
           <md-select class="col-xs-12" placeholder="Formato para análisis de datos" [(ngModel)]="formatoHora" name="formato">
             <md-option value="FechaExacta">Fecha Exacta</md-option>
-            <md-option value="PromAño">Cantidad de Registros en el Último Año</md-option>
-            <md-option value="PromMes">Cantidad de Registros en el Último Mes</md-option>
-            <md-option value="PromSem">Cantidad de Registros en la Última Semana</md-option>
+            <md-option value="RegAño">Cantidad de Registros en el Último Año</md-option>
+            <md-option value="RegMes">Cantidad de Registros en el Último Mes</md-option>
+            <md-option value="RegSem">Cantidad de Registros en la Última Semana</md-option>
+            <md-option value="PromAño">Promedio de Niveles en el Último Año</md-option>
+            <md-option value="PromMes">Promedio de Niveles en el Último Mes</md-option>
+            <md-option value="PromSem">Promedio de Niveles en la Última Semana</md-option>
           </md-select>
         </div>
 
@@ -78,14 +81,23 @@
             <app-grafica [data]="comparacion" [labels]="fechas" [colors]="mezclados"[options]="FechaExOptions" [tipo]='line'></app-grafica>
           </div>
           <div *ngIf="actualizar">
-            <div class="col-xs-12 espacio" *ngIf="formatoHora=='PromAño' && valsA">
+            <div class="col-xs-12 espacio" *ngIf="formatoHora=='RegAño' && valsA">
               <app-grafica-cuad [data]="valsA" [labels]="meses" [colors]="barraAzul"[options]="BarraOptions" [tipo]='grafVar'></app-grafica-cuad>
             </div>
-            <div class="col-xs-12 espacio" *ngIf="formatoHora=='PromMes' && valsM">
+            <div class="col-xs-12 espacio" *ngIf="formatoHora=='RegMes' && valsM">
               <app-grafica-cuad [data]="valsM" [labels]="semanas" [colors]="barraGris"[options]="BarraOptions" [tipo]='grafVar'></app-grafica-cuad>
             </div>
-            <div class="col-xs-12 espacio" *ngIf="formatoHora=='PromSem' && valsS">
+            <div class="col-xs-12 espacio" *ngIf="formatoHora=='RegSem' && valsS">
               <app-grafica-cuad [data]="valsS" [labels]="dias" [colors]="barraAzul"[options]="BarraOptions" [tipo]='grafVar'></app-grafica-cuad>
+            </div>
+            <div class="col-xs-12 espacio" *ngIf="formatoHora=='PromAño' && valsA">
+              <app-grafica-cuad [data]="promA" [labels]="meses" [colors]="barraRoja"[options]="BarraOptions" [tipo]='grafVar'></app-grafica-cuad>
+            </div>
+            <div class="col-xs-12 espacio" *ngIf="formatoHora=='PromMes' && valsM">
+              <app-grafica-cuad [data]="promM" [labels]="semanas" [colors]="barraVerde"[options]="BarraOptions" [tipo]='grafVar'></app-grafica-cuad>
+            </div>
+            <div class="col-xs-12 espacio" *ngIf="formatoHora=='PromSem' && valsS">
+              <app-grafica-cuad [data]="promS" [labels]="dias" [colors]="barraRoja"[options]="BarraOptions" [tipo]='grafVar'></app-grafica-cuad>
             </div>
           </div>
 

@@ -1,6 +1,7 @@
 # PhotonFront
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.0.0.
+Usar npm install zone.js@0.8.5 para evitar error de Apple undefined.
 
 ## Development server
 
