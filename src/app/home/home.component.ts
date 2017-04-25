@@ -48,14 +48,11 @@ export class HomeComponent implements OnInit {
   ]
   public fechas=[];
   public fechasOri=[];
-  public ticks:number;
   public events : boolean;
   public formatoHora:string;
   public line = 'line';
   public grafVar = 'bar';
 
-  public fex:boolean=true;
-  public barras:boolean=false;
   public actualizar:boolean=true;
 
   public volumenData: Array<any>= [
@@ -215,7 +212,7 @@ export class HomeComponent implements OnInit {
     this.lado=20;
     this.forma='Cilindro';
     let timer = Observable.timer(0,5000);
-    timer.subscribe(t=>{this.infoGeneral();this.ticks=t;});
+    timer.subscribe(t=>{this.infoGeneral();});
     let timer1 = Observable.timer(0,10000);
     timer1.subscribe(t=>{this.eventos(); });
     this.recalc();
@@ -231,10 +228,11 @@ export class HomeComponent implements OnInit {
           error => console.log(error)
         );
     }else{
+      this.realTime=false;
       console.log("Photon desconectado");
     }
-
   }
+
   infoGeneral():void{
     this._httpService.infoGen()
       .subscribe(
@@ -316,6 +314,7 @@ export class HomeComponent implements OnInit {
     this.dias =[0,1,2,3,4,5,6];
     var ahora = new Date().getTime();
     var prevM=100;
+
     for(var i = 0; i<this.historial.length;i++){
       if((ahora-this.fechasOri[i])<31536000000){
         var mes = new Date(this.fechasOri[i]).getMonth();
@@ -336,7 +335,6 @@ export class HomeComponent implements OnInit {
       }
     }
 
-
     this.meses= this.meses.filter(function(elem, index, self) {
       return index == self.indexOf(elem);
     })
@@ -346,7 +344,6 @@ export class HomeComponent implements OnInit {
     this.dias= this.dias.filter(function(elem, index, self) {
       return index == self.indexOf(elem);
     })
-
 
     var tmpM=this.meses;
     var tmpS=this.semanas;
@@ -396,6 +393,7 @@ export class HomeComponent implements OnInit {
         this.promA.push(tmpPA[this.meses[i]]/tmpAn[this.meses[i]]);
       }
     }
+
     for(var i = 0; i<this.semanas.length;i++){
       this.valsM.push(tmpMe[this.semanas[i]]);
       if(tmpMe[this.semanas[i]]==0){
@@ -404,6 +402,7 @@ export class HomeComponent implements OnInit {
         this.promM.push(tmpPM[this.semanas[i]]/tmpMe[this.semanas[i]]);
       }
     }
+
     for(var i = 0; i<this.dias.length;i++){
       this.valsS.push(tmpSe[this.dias[i]]);
       if(tmpSe[this.dias[i]]==0){
@@ -412,7 +411,6 @@ export class HomeComponent implements OnInit {
         this.promS.push(tmpPS[this.dias[i]]/tmpSe[this.dias[i]]);
       }
     }
-
 
     for(var i = 0; i<this.meses.length;i++){
       this.meses[i]=this.refM[this.meses[i]];
@@ -423,7 +421,6 @@ export class HomeComponent implements OnInit {
       }else{
         this.semanas[i]='Hace '+(5-i)+' semanas';
       }
-
     }
     for(var i = 0; i<this.dias.length;i++){
       if(i==6){
@@ -433,7 +430,6 @@ export class HomeComponent implements OnInit {
       }
     }
   }
-
 
   recolecta(data):void{
     for(var i = 0;i<data.feeds.length;i++){
@@ -465,10 +461,7 @@ export class HomeComponent implements OnInit {
         this.historial[i]=(this.calc(parseInt(data.feeds[i].field1)));
         this.niveles[i]=(parseInt(data.feeds[i].field1));
       }
-
-
     }
-
     this.graficasC();
   }
 }
