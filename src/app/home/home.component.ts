@@ -224,6 +224,7 @@ export class HomeComponent implements OnInit {
           data => {
             // console.log(data);
             this.niv=data.result;
+            this.recalc();
           },
           error => console.log(error)
         );
